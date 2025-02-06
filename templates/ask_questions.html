@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Answer Questions</title>
+</head>
+<body>
+    <h1>Answer multiple-choice questions for {{ skill_name }}</h1>
+    <form action="/submit_answers" method="POST">
+        <input type="hidden" name="skill_name" value="{{ skill_name }}">
+        
+        {% for index, question_data in questions %}
+            <div>
+                <h3>{{ index }}. {{ question_data['question'] }}</h3>
+                
+                {% for letter, choice in question_data['choices'].items() %}
+                    <div>
+                        <input type="radio" id="answer_{{ index }}_{{ letter }}" name="answer_{{ index }}" value="{{ letter }}" required>
+                        <label for="answer_{{ index }}_{{ letter }}">{{ choice }}</label>
+                    </div>
+                {% endfor %}
+                
+                <br><br>
+            </div>
+        {% endfor %}
+        
+        <button type="submit">Submit Answers</button>
+    </form>
+</body>
+</html>

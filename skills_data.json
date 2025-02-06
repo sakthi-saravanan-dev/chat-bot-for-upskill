@@ -1,0 +1,21 @@
+{
+    "skills": [
+      {
+        "name": "Python",
+        "questions": [
+          "What is Python?",
+          "What are the common Python data structures?",
+          "Explain the difference between Python 2 and Python 3."
+        ]
+      },
+      {
+        "name": "JavaScript",
+        "questions": [
+          "What is JavaScript?",
+          "How does JavaScript handle asynchronous code?",
+          "Explain closures in JavaScript."
+        ]
+      }
+    ]
+  }
+  
