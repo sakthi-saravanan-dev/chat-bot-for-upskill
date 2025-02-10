@@ -6,7 +6,7 @@ import os
 
 
 # Set up your OpenAI API key
-openai.api_key = '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'
+openai.api_key = 'your-secret-key'
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
