@@ -1,31 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Answer Questions</title>
-</head>
-<body>
-    <h1>Answer multiple-choice questions for {{ skill_name }}</h1>
-    <form action="/submit_answers" method="POST">
-        <input type="hidden" name="skill_name" value="{{ skill_name }}">
-        
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="{{ url_for('static', filename='main.css')}}" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/static/css/ai-brain.png" />
+    <title>SkillGuru</title>
+    <style>
+      body {
+        background-image: url("{{ url_for('static', filename='css/skill-guru-bg2.avif') }}");
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* height: 100vh; */
+        /* background-color: #f4f4f4; */
+        margin: 0;
+        font-family: Arial, sans-serif;
+      }
+
+      .container {
+        background-color: #f4e8e8;
+        padding: 10px 50px 20px 50px;
+        /* width: 50%; */
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        border-radius: 20px 50px;
+        /* text-align: center; */
+        border: 1px solid #f4e8e8;
+        /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+        margin: 30px 0px 0px 0px;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      p {
+        font-size: 18px;
+        color: #555;
+      }
+      .button-container {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      button {
+        background-color: #ee1351;
+        color: white;
+        padding: 12px 20px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 20px 50px;
+        width: 25%;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        display: inline-block;
+      }
+
+      button:hover {
+        background-color: #ee1351;
+      }
+      .main-container {
+        display: flex;
+        flex-direction: column;
+        /* align-items: center;  */
+        /* justify-content: center; */
+        height: 100vh;
+      }
+
+      .title-container {
+        display: flex;
+        align-items: center;
+        background-color: #f4e8e8;
+        border-radius: 15px 50px;
+        padding: 10px;
+        width: 160px;
+        height: 25px;
+        margin: 30px 0px 0px 0px;
+      }
+
+      .title-icon {
+        width: 40px;
+        height: auto;
+      }
+
+      .title-text {
+        margin: -7px;
+        font-size: 2rem;
+        background: linear-gradient(to right, #ff5f6d, #ffc371);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="main-container">
+        <div class="title-container">
+          <img
+            src="{{ url_for('static', filename='css/s-icon.png')}}"
+            alt=""
+            data-aos="fade-in"
+            class="title-icon"
+          />
+          <h1 class="title-text">kill</h1>
+          <img
+            src="{{ url_for('static', filename='css/g-icon.png')}}"
+            alt=""
+            data-aos="fade-in"
+            class="title-icon"
+          />
+          <h1 class="title-text">uru</h1>
+        </div>
+    <div class="container">
+      <h1>Answer MCQ for {{ skill_name }}</h1>
+      <form action="/submit_answers" method="POST">
+        <input type="hidden" name="skill_name" value="{{ skill_name }}" />
         {% for index, question_data in questions %}
-            <div>
-                <h3>{{ index }}. {{ question_data['question'] }}</h3>
-                
-                {% for letter, choice in question_data['choices'].items() %}
-                    <div>
-                        <input type="radio" id="answer_{{ index }}_{{ letter }}" name="answer_{{ index }}" value="{{ letter }}" required>
-                        <label for="answer_{{ index }}_{{ letter }}">{{ choice }}</label>
-                    </div>
-                {% endfor %}
-                
-                <br><br>
-            </div>
+        <div>
+          <h3>{{ index }}. {{ question_data['question'] }}</h3>
+          {% for letter, choice in question_data['choices'].items() %}
+          <div>
+            <input
+              type="radio"
+              id="answer_{{ index }}_{{ letter }}"
+              name="answer_{{ index }}"
+              value="{{ letter }}"
+              required
+            />
+            <label for="answer_{{ index }}_{{ letter }}">{{ choice }}</label>
+          </div>
+          {% endfor %}
+          <!-- <br /><br /> -->
+        </div>
         {% endfor %}
-        
-        <button type="submit">Submit Answers</button>
-    </form>
-</body>
+        <div class="button-container">
+          <button type="submit">Submit Answers</button>
+        </div>
+      </form>
+    </div>
+    </div>
+  </body>
 </html>

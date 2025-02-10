@@ -1,11 +1,15 @@
 import openai
 import json
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
+import re
+import os
+
 
 # Set up your OpenAI API key
-openai.api_key = 'your-api-key'  # Replace with your actual OpenAI API key
+openai.api_key = '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'
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
 # Function to load skill data from JSON file
 def load_skills_data():
@@ -40,66 +44,72 @@ def index():
 @app.route('/ask_questions', methods=['POST'])
 def ask_questions():
     skill_name = request.form['skill_name']
-    
-    # Create a prompt to generate multiple-choice questions based on the user-provided skill
+
     analysis_prompt = f"""
-    Generate a list of 5 multiple-choice questions with 4 choices each for someone looking to improve their {skill_name} skill.
-    The questions should be detailed and relevant to {skill_name}, and follow this format:
+    Generate a list of 10 multiple-choice questions with 4 choices each for {skill_name}. 
+    Also, provide the correct answer for each question in this format:
 
-    Question 1: What is the best way to learn {skill_name}?
-    A) Option 1
-    B) Option 2
-    C) Option 3
-    D) Option 4
+    1. Question: <question text>
+    A) <option 1>
+    B) <option 2>
+    C) <option 3>
+    D) <option 4>
+    Correct Answer: <A/B/C/D>
 
-    Question 2: How can you improve your {skill_name} skills?
-    A) Option 1
-    B) Option 2
-    C) Option 3
-    D) Option 4
-
-    Continue this format for 5 questions.
+    Ensure all 10 questions are included.
     """
-    print(analysis_prompt)
-    # Use the OpenAI API to generate the questions
+
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  # Using the chat-based model
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": analysis_prompt}
-        ],
-        max_tokens=600  # Increase the token limit to allow more questions
+        model="gpt-3.5-turbo",
+        messages=[{"role": "system", "content": "You are a helpful assistant."},
+                  {"role": "user", "content": analysis_prompt}],
+        max_tokens=800
     )
 
-    # Extract the generated questions and choices from the response
-    content = response['choices'][0]['message']['content'].strip().split("\n\n")
+    content = response['choices'][0]['message']['content'].strip()
+    question_pattern = re.findall(r'(\d+)\.\sQuestion:\s(.+?)\nA\)\s(.+?)\nB\)\s(.+?)\nC\)\s(.+?)\nD\)\s(.+?)\nCorrect Answer:\s([A-D])', content, re.DOTALL)
     questions = []
+    correct_answers = {}
 
-    for question_block in content:
-        question_lines = question_block.split("\n")
-        question = question_lines[0].strip()
-        choices = {letter: choice.strip() for letter, choice in zip("ABCD", question_lines[1:])}
-        questions.append({"question": question, "choices": choices})
+    # print("Raw OpenAI Response:", content)  # Debugging: Print raw response
+    for q in question_pattern:
+        question_number, question_text, a, b, c, d, correct = q
+        questions.append({"question": question_text, "choices": {"A": a, "B": b, "C": c, "D": d}})
+        correct_answers[f'answer_{question_number}'] = correct
+
+    # If fewer than 10 questions were extracted, request OpenAI again or fill with placeholders
+    while len(questions) < 10:
+        missing_qn = len(questions) + 1
+        questions.append({"question": f"Placeholder Question {missing_qn}", "choices": {"A": "Option 1", "B": "Option 2", "C": "Option 3", "D": "Option 4"}})
     
-    # Return the questions to the template
+    session['correct_answers'] = correct_answers  # Store correct answers for evaluation
     return render_template('ask_questions.html', skill_name=skill_name, questions=enumerate(questions, 1))
+   
+
 
 
 @app.route('/submit_answers', methods=['POST'])
 def submit_answers():
     skill_name = request.form['skill_name']
+    user_answers = {f'answer_{i}': request.form[f'answer_{i}'] for i in range(1, 11)}
+
+    correct_answers = session.get('correct_answers', {})
+
+    correct_count = sum(1 for key, value in user_answers.items() if correct_answers.get(key) == value)
+    print(f"Correct count: {correct_count} / {len(correct_answers)}")
     
     # Collect all answers from the form. It assumes you name each answer field 'answer_X' (where X is the index)
-    answers = [request.form[f'answer_{i}'] for i in range(1, len(request.form))]
+    # answers = [request.form[f'answer_{i}'] for i in range(1, len(request.form))]
     
     # Create a system prompt with the answers
     analysis_prompt = f"""
-    User has selected {skill_name}. Here are their answers to the skill-related questions:
-    {answers}
+    User has selected {skill_name}. Here are their answers:
+    {user_answers}
 
-    Based on their responses, provide suggestions on areas to improve and tips to master the selected skill.
+    Out of 10, they got {correct_count} correct.
+    Based on their mistakes, provide suggestions for improvement.
     """
-    print(analysis_prompt)
+    # print(analysis_prompt)
     # Use the ChatCompletion API endpoint (correct method for chat-based models)
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",  # Use the chat-based model
@@ -107,13 +117,15 @@ def submit_answers():
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": analysis_prompt}
         ],
-        max_tokens=200
+        max_tokens=500
     )
     
     # Extract suggestions from the response
+    # Extract suggestions from OpenAI response
     suggestions = response['choices'][0]['message']['content'].strip()
-    
-    return render_template('suggestions.html', suggestions=suggestions)
+
+    # Pass suggestions as a list to the template    
+    return render_template('suggestions.html', correct_count=correct_count, total_questions=10, suggestions=suggestions)
 
 
 if __name__ == '__main__':
