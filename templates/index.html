@@ -1,102 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Provide Your Skill</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="{{ url_for('static', filename='main.css')}}" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/static/css/ai-brain.png" />
+    <title>SkillGuru</title>
     <style>
-        /* Global Styles */
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7fc;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        
+      body {
+        font-family: "Arial", sans-serif;
+        background-image: url("{{ url_for('static', filename='css/skill-guru-bg2.avif') }}");
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        background-size: cover;
+        background-position: center;
+        background-color: #f4e8e8;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 20px 50px;
+        padding: 30px;
+        width: 100%;
+        max-width: 500px;
+        margin: 30px 0px 50px 0px;
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      label {
+        font-size: 1rem;
+        margin-bottom: 10px;
+        display: block;
+        color: #333;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+        outline: none;
+        box-sizing: border-box;
+      }
+
+      input[type="text"]:focus {
+        border-color: #ee1351;
+      }
+
+      button {
+        background-color: #ee1351;
+        color: white;
+        padding: 12px 20px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 20px 50px;
+        width: 100%;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #ee1351;
+      }
+
+      .footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 0.9rem;
+        color: #777;
+      }
+
+      @media (max-width: 600px) {
         .container {
-            background-color: #ffffff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 30px;
-            width: 100%;
-            max-width: 500px;
+          padding: 20px;
         }
+      }
+      .title-container {
+        display: flex;
+        align-items: center;
+        background-color: #f4e8e8;
+        border-radius: 15px 50px;
+        padding: 10px;
+        width: 160px;
+        height: 25px;
+        margin: 30px 0px 0px -300px;
+      }
 
-        h1 {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #333;
-        }
+      .title-icon {
+        width: 40px;
+        height: auto;
+      }
 
-        label {
-            font-size: 1rem;
-            margin-bottom: 10px;
-            display: block;
-            color: #333;
-        }
+      .title-text {
+        margin: -7px;
+        font-size: 2rem;
+        background: linear-gradient(to right, #ff5f6d, #ffc371);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
 
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            font-size: 1rem;
-            outline: none;
-            box-sizing: border-box;
-        }
-
-        input[type="text"]:focus {
-            border-color: #4CAF50;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 20px;
-            font-size: 1rem;
-            border: none;
-            border-radius: 4px;
-            width: 100%;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: #777;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-        }
+      .main-container {
+        display: flex;
+        flex-direction: column;
+        /* align-items: center;  */
+        /* justify-content: center; */
+        height: 100vh;
+      }
     </style>
-</head>
-<body>
-    <div class="container">
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="title-container">
+        <img
+          src="{{ url_for('static', filename='css/s-icon.png')}}"
+          alt=""
+          data-aos="fade-in"
+          class="title-icon"
+        />
+        <h1 class="title-text">kill</h1>
+        <img
+          src="{{ url_for('static', filename='css/g-icon.png')}}"
+          alt=""
+          data-aos="fade-in"
+          class="title-icon"
+        />
+        <h1 class="title-text">uru</h1>
+      </div>
+      <div class="container">
         <h1>Provide Your Skill</h1>
         <form action="/ask_questions" method="POST">
-            <label for="skill_name">Enter a skill (e.g., Python programming):</label>
-            <input type="text" id="skill_name" name="skill_name" required>
-            <button type="submit">Generate Questions</button>
+          <label for="skill_name"
+            >Enter a skill (e.g., Python programming):</label
+          >
+          <input type="text" id="skill_name" name="skill_name" required />
+          <button type="submit">Generate Questions</button>
         </form>
         <div class="footer">
-            <p>Powered by AI</p>
+          <p>Powered by SkillGuru</p>
         </div>
+      </div>
     </div>
-</body>
+  </body>
 </html>
