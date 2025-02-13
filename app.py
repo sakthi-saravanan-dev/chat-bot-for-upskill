@@ -349,7 +349,7 @@ if __name__ == '__main__':
 # from flask import Flask, render_template, request, jsonify
 
 # # Set up your OpenAI API key
-# openai.api_key = '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'  # Replace with your actual OpenAI API key
+# openai.api_key = 'your-api-key'  # Replace with your actual OpenAI API key
 
 # app = Flask(__name__)
 
