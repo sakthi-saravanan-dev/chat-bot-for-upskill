@@ -8,7 +8,7 @@ import os
 openai.api_key = 'your-api-key'  # Replace with your actual key
 
 app = Flask(__name__)
-app.secret_key = 'chatbot-skillguru'
+# app.secret_key = 'chatbot-skillguru'
 
 # Function to load skill data from JSON file
 def load_skills_data():
