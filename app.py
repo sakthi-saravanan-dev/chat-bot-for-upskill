@@ -5,7 +5,7 @@ import re
 import os
 
 # Set up your OpenAI API key
-openai.api_key = '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'  # Replace with your actual key
+openai.api_key = 'your-api-key'  # Replace with your actual key
 
 app = Flask(__name__)
 app.secret_key = 'chatbot-skillguru'
