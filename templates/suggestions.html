@@ -57,7 +57,6 @@
         display: flex;
         flex-direction: column;
         align-items: center; 
-        /* justify-content: center; */
         height: 100vh;
       }
 
@@ -90,7 +89,6 @@
         padding: 10px;
         margin: 10px 0;
         background-color: #f8f9fa;
-        /* background-color: #1775d3; */
         border-radius: 5px;
       }
 
@@ -113,6 +111,13 @@
         font-size: 14px;
         color: #555;
       }
+
+      .bullet-points {
+        list-style-type: disc;
+        padding-left: 20px;
+        text-align: left;
+        margin-top: 20px;
+      }
     </style>
   </head>
   <body>
@@ -134,7 +139,6 @@
         <h1 class="title-text">uru</h1>
       </div>
       <div class="container">
-        <!-- <h2>Your Score: {{ correct_count }} / {{ total_questions }}</h2> -->
         <h1>Suggestions for Improvement</h1>
 
         <!-- Display Improvement Suggestions for All 10 Questions -->
@@ -145,10 +149,14 @@
           </div>
         {% endfor %}
 
-        <!-- Overall Improvement Suggestion -->
+        <!-- Overall Improvement Suggestion as Bullet Points -->
         <div class="suggestion-box">
           <h3>Overall Improvement Suggestion:</h3>
-          <p class="suggestion-text">{{ consolidated_suggestion }}</p>
+          <ul class="bullet-points">
+            {% for point in suggestions_list %}
+              <li>{{ point }}</li>
+            {% endfor %}
+          </ul>
         </div>
 
         <a href="/">Go Back to Home Page</a>

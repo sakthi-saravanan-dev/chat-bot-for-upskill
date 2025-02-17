@@ -5,7 +5,7 @@ import re
 import os
 
 # Set up your OpenAI API key
-openai.api_key = 'your-api-key'  # Replace with your actual key
+openai.api_key = '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'  # Replace with your actual key
 
 app = Flask(__name__)
 app.secret_key = 'chatbot-skillguru'
@@ -111,6 +111,7 @@ def submit_answers():
     Based on your score of {correct_count} out of 10, these suggestions are tailored to help you strengthen your understanding of {skill_name}. Continue practicing and refining your knowledge, and you’ll see steady improvement.
     """
 
+    # Requesting a response from OpenAI
     consolidated_response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[ 
@@ -123,7 +124,14 @@ def submit_answers():
 
     consolidated_suggestion = consolidated_response.choices[0].message['content'].strip()
 
-    return render_template('suggestions.html', correct_count=correct_count, total_questions=10, consolidated_suggestion=consolidated_suggestion)
+    # Convert the response into bullet points by splitting each suggestion with newlines
+    suggestions_list = consolidated_suggestion.split('\n')
+    
+    # Filter out empty lines if any
+    suggestions_list = [suggestion.strip() for suggestion in suggestions_list if suggestion.strip()]
+
+    # Render the suggestions in bullet-point format
+    return render_template('suggestions.html', correct_count=correct_count, total_questions=10, suggestions_list=suggestions_list)
 
 if __name__ == '__main__':
     app.run(debug=True)
