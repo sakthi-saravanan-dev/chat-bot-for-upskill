@@ -93,70 +93,37 @@ def submit_answers():
     correct_answers = session.get('correct_answers', {})
 
     correct_count = sum(1 for key, value in user_answers.items() if correct_answers.get(key) == value)
-    
-    # Collecting individual suggestions for each question
-    individual_suggestions = []
-    for question_num in range(1, 11):  # Ensure we're iterating over all 10 questions
-        user_answer = user_answers[f'answer_{question_num}']
-        correct_answer = correct_answers.get(f'answer_{question_num}')
-        
-        # Constructing prompt to get unique and concise feedback (max 3 lines)
-        analysis_prompt = f"""
-        Question {question_num}:
-        The user's answer was {user_answer}, but the correct answer is {correct_answer}.
-        Provide a unique and concise suggestion or explanation for improvement (maximum 3 lines, ideally 2-3 sentences).
-        Keep it brief and actionable. If the answer is correct, just say "Correct answer! Well done!".
-        """ 
 
-        # Generate suggestion for each question, ensuring uniqueness and brevity
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": analysis_prompt}
-            ],
-            max_tokens=250,  # Increase max tokens to handle detailed suggestions for each question
-            temperature=0.7
-        )
-        
-        suggestion = response.choices[0].message['content'].strip()
-
-        # Truncate response if it's still too long
-        if len(suggestion.split('\n')) > 3:
-            suggestion = '\n'.join(suggestion.split('\n')[:3])  # Limit to 3 lines
-
-        # Append suggestion to list
-        individual_suggestions.append({
-            "question": f"Question {question_num}",
-            "suggestion": suggestion if user_answer != correct_answer else "Correct answer! Well done!"
-        })
-
-    # Now, generate the consolidated skill-level suggestion
+    # Consolidated skill-level suggestion based on performance
     consolidated_prompt = f"""
     User selected the {skill_name} skill. They got {correct_count} out of 10 correct.
-    Provide a brief overall suggestion for how they can improve their understanding of {skill_name}.
-    Keep it concise and actionable (maximum 3 lines).
+    Based on their performance, here are some personalized suggestions to help them improve their understanding of {skill_name}:
+
+    - If you answered less than half of the questions correctly, it's important to revisit the foundational concepts. Focus on understanding the core principles before moving on to more advanced topics.
+    - If you got around half correct, you're on the right track! Try to focus more on the areas where you missed questions. Break down complex problems and make sure you understand the reasoning behind each solution.
+    - If you got a majority of questions correct, great job! However, keep practicing and solving problems regularly to ensure that you can apply the knowledge consistently.
+    - Review the areas where you struggled and find alternative learning resources to gain a better understanding. Often, a different explanation can help clarify concepts that are difficult to grasp.
+    - Try practicing more with interactive resources, quizzes, or real-world examples to reinforce your understanding of the topic.
+    - Focus on any specific patterns in the types of questions you missed. Are there particular concepts or areas that you need to review more?
+    - Don’t be discouraged by incorrect answers. Mistakes are an essential part of learning and can provide valuable insights into what you need to work on.
+    - Stay consistent with your study routine and consider setting small, measurable goals to track your progress.
+
+    Based on your score of {correct_count} out of 10, these suggestions are tailored to help you strengthen your understanding of {skill_name}. Continue practicing and refining your knowledge, and you’ll see steady improvement.
     """
 
     consolidated_response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
-        messages=[
+        messages=[ 
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": consolidated_prompt}
         ],
-        max_tokens=250,  # Increase max tokens to handle a more detailed overall suggestion
+        max_tokens=1500,
         temperature=0.7
     )
 
     consolidated_suggestion = consolidated_response.choices[0].message['content'].strip()
 
-    # Truncate response if needed
-    if len(consolidated_suggestion.split('\n')) > 3:
-        consolidated_suggestion = '\n'.join(consolidated_suggestion.split('\n')[:3])  # Limit to 3 lines
-
-    return render_template('suggestions.html', correct_count=correct_count, total_questions=10, 
-                           individual_suggestions=individual_suggestions, consolidated_suggestion=consolidated_suggestion)
-
+    return render_template('suggestions.html', correct_count=correct_count, total_questions=10, consolidated_suggestion=consolidated_suggestion)
 
 if __name__ == '__main__':
     app.run(debug=True)
